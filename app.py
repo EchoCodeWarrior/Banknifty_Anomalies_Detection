@@ -691,4 +691,110 @@ if df_original is not None:
         risk_metrics = {
             'Sharpe Ratio (Approx)': f"{(df_filtered['price_change_pct'].mean() / df_filtered['price_change_pct'].std() * (252**0.5)):.2f}",
             'Maximum Single Day Loss': f"{df_filtered['price_change_pct'].min():.2f}%",
-            'Maximum Single Day Gain': f"{df_filtered['price_change_pct'].max():.2f}
+            'Maximum Single Day Gain': f"{df_filtered['price_change_pct'].max():.2f}%",
+            'Days with >5% Moves': str(len(df_filtered[abs(df_filtered['price_change_pct']) > 5])),
+            'Anomaly Detection Rate': f"{(total_anomalies/len(df_filtered)*100):.2f}%",
+            'Current Risk Level': 'High' if df_filtered['volatility_21d'].iloc[-1] > df_filtered['volatility_21d'].quantile(0.75) else 'Moderate'
+        }
+        
+        risk_col1, risk_col2, risk_col3 = st.columns(3)
+        for i, (metric, value) in enumerate(risk_metrics.items()):
+            col = [risk_col1, risk_col2, risk_col3][i % 3]
+            with col:
+                st.metric(label=metric, value=value)
+
+    # --- AI Insights Section ---
+    st.markdown('<h2 class="section-header">🤖 AI-Powered Market Insights</h2>', unsafe_allow_html=True)
+    
+    # Generate insights based on current data
+    latest_price_change = df_filtered['price_change_pct'].iloc[-1]
+    recent_volatility = df_filtered['volatility_21d'].iloc[-10:].mean()
+    volatility_trend = "increasing" if df_filtered['volatility_21d'].iloc[-5:].mean() > df_filtered['volatility_21d'].iloc[-10:-5].mean() else "decreasing"
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        <div class="alert-info">
+            <strong>🎯 Current Market Conditions</strong><br>
+        """, unsafe_allow_html=True)
+        
+        if abs(latest_price_change) > 2:
+            st.markdown(f"• **High volatility detected**: {latest_price_change:+.2f}% daily change")
+        else:
+            st.markdown(f"• **Stable conditions**: {latest_price_change:+.2f}% daily change")
+            
+        st.markdown(f"""
+            • **Volatility trend**: {volatility_trend.title()} ({recent_volatility:.2f}%)
+            • **Risk assessment**: {"Elevated" if recent_volatility > 2.5 else "Normal"}
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="alert-success">
+            <strong>💡 Trading Recommendations</strong><br>
+        """, unsafe_allow_html=True)
+        
+        if recent_volatility > 3:
+            st.markdown("• **High volatility period** - Consider protective strategies")
+        elif recent_volatility < 1.5:
+            st.markdown("• **Low volatility period** - Potential breakout watch")
+        else:
+            st.markdown("• **Normal volatility** - Standard risk management")
+            
+        if total_anomalies > len(df_filtered) * 0.01:
+            st.markdown("• **Increased anomaly frequency** - Enhanced monitoring recommended")
+        
+        st.markdown("• **Always use proper risk management and position sizing**")
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    # --- Footer with Model Information ---
+    st.markdown("---")
+    st.markdown("""
+    <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(45, 55, 72, 0.8) 0%, rgba(26, 32, 44, 0.8) 100%); border-radius: 10px; margin-top: 2rem;">
+        <h3 style="color: #4fd1c7; margin-bottom: 1rem;">🔬 Model Information</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; text-align: left;">
+            <div>
+                <strong style="color: #4fd1c7;">Algorithm:</strong><br>
+                <span style="color: rgba(255,255,255,0.8);">Isolation Forest (Unsupervised)</span>
+            </div>
+            <div>
+                <strong style="color: #4fd1c7;">Features:</strong><br>
+                <span style="color: rgba(255,255,255,0.8);">6 Technical Indicators</span>
+            </div>
+            <div>
+                <strong style="color: #4fd1c7;">Contamination Rate:</strong><br>
+                <span style="color: rgba(255,255,255,0.8);">{contamination_level:.1%}</span>
+            </div>
+            <div>
+                <strong style="color: #4fd1c7;">Data Period:</strong><br>
+                <span style="color: rgba(255,255,255,0.8);">{len(df_filtered):,} trading days</span>
+            </div>
+        </div>
+        <p style="margin-top: 1.5rem; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+            ⚠️ <strong>Disclaimer:</strong> This tool is for educational and analytical purposes only. 
+            Always consult with financial advisors and conduct your own research before making investment decisions.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+else:
+    # Error state with premium styling
+    st.markdown("""
+    <div style="text-align: center; padding: 3rem; background: linear-gradient(135deg, rgba(255, 71, 87, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%); border-radius: 15px; border: 2px solid rgba(255, 71, 87, 0.3);">
+        <h2 style="color: #ff4757; margin-bottom: 1rem;">⚠️ Data Loading Error</h2>
+        <p style="color: rgba(255,255,255,0.8); font-size: 1.1rem; margin-bottom: 2rem;">
+            Unable to load the required data file. Please ensure 'chart.csv' is available in the application directory.
+        </p>
+        <div style="background: rgba(45, 55, 72, 0.5); padding: 1.5rem; border-radius: 10px; text-align: left; max-width: 500px; margin: 0 auto;">
+            <h4 style="color: #4fd1c7;">Required File Format:</h4>
+            <ul style="color: rgba(255,255,255,0.7);">
+                <li>File name: <code>chart.csv</code></li>
+                <li>Required columns: Date, Close Price, Volume (optional)</li>
+                <li>Date format: YYYY-MM-DD or standard date formats</li>
+                <li>Price data: Numerical values</li>
+            </ul>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
