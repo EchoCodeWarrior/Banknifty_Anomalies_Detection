@@ -34,9 +34,13 @@ A sophisticated financial analytics dashboard that leverages machine learning to
 
 ## 🚀 Live Demo
 
-🌐 **[View Live Application](YOUR_SITE_LINK_HERE)**
+🌐 **[View Live Application](https://bankniftyanomaliesdetection.streamlit.app/)**
 
-📹 **[Watch Demonstration Video](YOUR_VIDEO_LINK_HERE)**
+📹 **[Watch Demonstration Video]**
+
+
+https://github.com/user-attachments/assets/2b82d06c-d3e3-45a1-acfc-cdb5f234d424
+
 
 ## 📋 Prerequisites
 
@@ -50,8 +54,8 @@ Before running this application, ensure you have:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/bank-nifty-intelligence-hub.git
-   cd bank-nifty-intelligence-hub
+   git clone https://github.com/EchoCodeWarrior/Banknifty_Anomalies_Detection
+   cd Banknifty_Anomalies_Detection
    ```
 
 2. **Install required dependencies**
@@ -192,10 +196,10 @@ While this is a personal project, suggestions and feedback are welcome! Feel fre
 
 ## 📞 Contact & Support
 
-- **Developer**: [Your Name]
-- **Email**: [your.email@example.com]
-- **Website**: [YOUR_SITE_LINK_HERE]
-- **Demo Video**: [YOUR_VIDEO_LINK_HERE]
+- **Developer**: Atharva Borhade
+- **Email**: atharvasadanandborhade@gmail.com
+- **Website**: https://bankniftyanomaliesdetection.streamlit.app/
+  
 
 ## 🙏 Acknowledgments
 
